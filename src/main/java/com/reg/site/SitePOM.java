@@ -46,7 +46,9 @@ public class SitePOM {
 		return colorLbl.getText();
 	}
 	
-	public String getMake() {
+	public String getMake(WebDriverWait wait) {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"pr3\"]/div/ul/li[2]/span[2]/strong")));
+		
 		return makeLbl.getText();
 	}
 	
