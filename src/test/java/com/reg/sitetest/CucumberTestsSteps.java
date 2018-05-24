@@ -103,12 +103,11 @@ public class CucumberTestsSteps {
 			sitePom.submitReg(action, ExcelUtils.getCellData(i, 0), wait);
 			test.log(LogStatus.INFO, "Submitted reg number");
 			
+			String actual = sitePom.getMake(wait);
+			String expected = ExcelUtils.getCellData(i, 1);	
+			
 			String imagePath = HelperMethods.screenshot(driver, Constants.PATH);
 			test.log(LogStatus.INFO, "Screenshot has been captured" + test.addScreenCapture(imagePath));
-			
-			
-			String actual = sitePom.getMake(wait);
-			String expected = ExcelUtils.getCellData(i, 1);
 			
 			if (!actual.equals(expected)) {
 				test.log(LogStatus.FAIL, "Did not recieve expected make of " + ExcelUtils.getCellData(i, 1));
