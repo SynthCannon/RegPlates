@@ -1,6 +1,7 @@
 package com.reg.site;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
@@ -30,13 +31,13 @@ public class SitePOM {
 	@FindBy(xpath = "//*[@id=\"pr3\"]/div/button")
 	private WebElement continueBtn2;
 
-	public void startIt(Actions action, WebDriverWait wait, String expected) {
+	public void startIt(Actions action, WebDriverWait wait, String expected) throws TimeoutException{
 		action.click(startNowBtn).perform();
 		
 		wait.until(ExpectedConditions.urlContains(expected));
 	}
 	
-	public void submitReg(Actions action, String regNum, WebDriverWait wait) {
+	public void submitReg(Actions action, String regNum, WebDriverWait wait) throws TimeoutException{
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"content\"]/form/div/div/div[2]/fieldset/button")));
 		
 		action.click(form).sendKeys(regNum).click(continueBtn1).perform();
@@ -46,7 +47,7 @@ public class SitePOM {
 		return colorLbl.getText();
 	}
 	
-	public String getMake(WebDriverWait wait) {
+	public String getMake(WebDriverWait wait) throws TimeoutException{
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"pr3\"]/div/ul/li[2]/span[2]/strong")));
 		
 		return makeLbl.getText();

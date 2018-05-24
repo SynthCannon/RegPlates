@@ -15,7 +15,7 @@ public class HelperMethods {
 
 	public static String screenshot(WebDriver driver, String path) {
 
-		String dateName = new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
+		String dateName = new SimpleDateFormat("yyyyMMddhhmmssSSS").format(new Date());
 
 		TakesScreenshot ts = (TakesScreenshot) driver;
 

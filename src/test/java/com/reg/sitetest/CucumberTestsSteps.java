@@ -1,5 +1,6 @@
 package com.reg.sitetest;
 
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -29,6 +30,7 @@ public class CucumberTestsSteps {
 	private WebDriverWait wait;
 	private ExtentTest test;
 	private ExtentReports report;
+	
 
 	/////////////////////////// Surrounding the test methods ///////////////////////////
 	@Before
@@ -61,18 +63,24 @@ public class CucumberTestsSteps {
 	@When("^I click the search button$")
 	public void i_click_the_search_button() throws Throwable {
 		test = report.startTest("Testing main site navigation working");
-		sitePom.startIt(action, wait, "https://vehicleenquiry.service.gov.uk/");
+		
+		try {
+			sitePom.startIt(action, wait, "https://vehicleenquiry.service.gov.uk/");
+		} catch (TimeoutException e) {
+			test.log(LogStatus.INFO, "Screenshot has been captured" + test.addScreenCapture(HelperMethods.screenshot(driver, Constants.PATH)));
+			test.log(LogStatus.FAIL, "Did not reach required URL");
+			return;
+		}
 	}
 
 	@Then("^I reach the search page$")
 	public void i_reach_the_search_page() throws Throwable {
+		String actual = driver.getCurrentUrl();
 		String expected = "https://vehicleenquiry.service.gov.uk/";
 		
-		String actual = driver.getCurrentUrl();
+		test.log(LogStatus.INFO, "Screenshot has been captured" + test.addScreenCapture(HelperMethods.screenshot(driver, Constants.PATH)));
 		
 		if (!actual.equals(expected)) {
-			String imagePath = HelperMethods.screenshot(driver, Constants.PATH);
-			test.log(LogStatus.INFO, "Screenshot has been captured" + test.addScreenCapture(imagePath));
 			test.log(LogStatus.FAIL, "Did not reach required URL");
 		} else {
 			test.log(LogStatus.PASS, "Navigation passed");
@@ -96,18 +104,37 @@ public class CucumberTestsSteps {
 
 	@Then("^I find the correct information$")
 	public void i_find_the_correct_information() throws Throwable {
+		
+			
 		for (int i = 1; i < ExcelUtils.getExcelWSheet().getPhysicalNumberOfRows(); i++) {
 			test = report.startTest("Excel Data Test: " + i);
 			test.log(LogStatus.INFO, "Set up Excel Utils path - Opened file stream");
 		
-			sitePom.submitReg(action, ExcelUtils.getCellData(i, 0), wait);
+			try {
+				sitePom.submitReg(action, ExcelUtils.getCellData(i, 0), wait);
+			} catch (TimeoutException e) {
+				test.log(LogStatus.INFO, "Screenshot has been captured" + test.addScreenCapture(HelperMethods.screenshot(driver, Constants.PATH)));
+				test.log(LogStatus.FAIL, "Did not find elements in page");
+				return;
+			}
+			
 			test.log(LogStatus.INFO, "Submitted reg number");
+			String actual = "";	
+			try {
+				actual = sitePom.getMake(wait);
+			} catch (TimeoutException e) {
+				test.log(LogStatus.INFO, "Screenshot has been captured" + test.addScreenCapture(HelperMethods.screenshot(driver, Constants.PATH)));
+				test.log(LogStatus.FAIL, "Did not find number plate in database");
+				report.endTest(test);
+				report.flush();
+				ExcelUtils.setCellData("Fail", i, 3);
+				
+				return;
+			}
 			
-			String actual = sitePom.getMake(wait);
+			test.log(LogStatus.INFO, "Screenshot has been captured" + test.addScreenCapture(HelperMethods.screenshot(driver, Constants.PATH)));
+			
 			String expected = ExcelUtils.getCellData(i, 1);	
-			
-			String imagePath = HelperMethods.screenshot(driver, Constants.PATH);
-			test.log(LogStatus.INFO, "Screenshot has been captured" + test.addScreenCapture(imagePath));
 			
 			if (!actual.equals(expected)) {
 				test.log(LogStatus.FAIL, "Did not recieve expected make of " + ExcelUtils.getCellData(i, 1));
