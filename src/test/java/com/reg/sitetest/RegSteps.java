@@ -25,7 +25,7 @@ public class RegSteps {
 	/////////////////////////// Attributes ///////////////////////////
 
 	private WebDriver driver;
-	private SitePOM sitePom;
+	private SitePOM sitePOM;
 	private Actions action;
 	private WebDriverWait wait;
 	private ExtentTest test;
@@ -38,7 +38,7 @@ public class RegSteps {
 		driver = new ChromeDriver();
 		driver.manage().window();
 
-		sitePom = PageFactory.initElements(driver, SitePOM.class);
+		sitePOM = PageFactory.initElements(driver, SitePOM.class);
 		action = new Actions(driver);
 		wait = new WebDriverWait(driver, 10);
 
@@ -64,7 +64,7 @@ public class RegSteps {
 		test = report.startTest("Testing main site navigation working");
 
 		try {
-			sitePom.startIt(wait, Constants.ENQUIRY_URL);
+			sitePOM.startIt(wait, Constants.ENQUIRY_URL);
 		} catch (TimeoutException e) {
 			test.log(LogStatus.FAIL, "Did not reach any URL");
 			return;
@@ -110,7 +110,7 @@ public class RegSteps {
 			test.log(LogStatus.INFO, "Set up Excel Utils path - Opened file stream");
 
 			try {
-				sitePom.submitReg(action, ExcelUtils.getCellData(i, 0), wait);
+				sitePOM.submitReg(action, ExcelUtils.getCellData(i, 0), wait);
 			} catch (TimeoutException e) {
 				test.log(LogStatus.INFO, "Screenshot has been captured"
 						+ test.addScreenCapture(HelperMethods.screenshot(driver, Constants.PATH)));
@@ -121,7 +121,7 @@ public class RegSteps {
 			test.log(LogStatus.INFO, "Submitted reg number");
 			String actual = "";
 			try {
-				actual = sitePom.getMake(wait);
+				actual = sitePOM.getMake(wait);
 			} catch (TimeoutException e) {
 				test.log(LogStatus.INFO, "Screenshot has been captured"
 						+ test.addScreenCapture(HelperMethods.screenshot(driver, Constants.PATH)));
@@ -147,7 +147,7 @@ public class RegSteps {
 				return;
 			}
 
-			actual = sitePom.getColor();
+			actual = sitePOM.getColor();
 			expected = ExcelUtils.getCellData(i, 2);
 			if (!actual.equals(expected)) {
 				test.log(LogStatus.FAIL, "Did not recieve expected color of " + ExcelUtils.getCellData(i, 2));
@@ -162,7 +162,7 @@ public class RegSteps {
 			test.log(LogStatus.PASS, "Row " + i + " Passed");
 
 			report.endTest(test);
-			sitePom.startAgain();
+			sitePOM.startAgain();
 		}
 
 	}
